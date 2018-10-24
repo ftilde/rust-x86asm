@@ -298,10 +298,18 @@ impl OperandDefinition {
                         if code >= 0x10 {
                             if let Some(CompositePrefix::Evex { .. }) = instr_def.composite_prefix { true }
                             else { false }
-                        } else if code >= 0x8 { 
-                            if let Some(CompositePrefix::Evex { .. }) = instr_def.composite_prefix { true }
-                            else if let Some(CompositePrefix::Vex { .. }) = instr_def.composite_prefix { true }
-                            else { false }
+                        } else if code >= 0x8 {
+                            if let Some(v) = instr_def.composite_prefix {
+                                match v {
+                                    CompositePrefix::Evex { .. } => true,
+                                    CompositePrefix::Vex { .. } => true,
+                                    _ => false,
+                                }
+                            } else {
+                                // Was `false`, but fails to encode `movd xmm8, eax`, for example.
+                                // TODO, see if this is actually correct in all cases.
+                                true
+                            }
                         } else { true }
                     } else { true }
                 } else { true }
