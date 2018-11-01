@@ -396,7 +396,7 @@ fn encode_indirect_16(buffer: &mut InstructionBuffer, reg1: Option<Reg>, reg2: O
 fn encode_indirect_32(buffer: &mut InstructionBuffer, base: Option<Reg>, index: Option<Reg>, scale: Option<RegScale>, displacement: u64, mode: Mode) -> Result<(), InstructionEncodingError> {
     fn disp_helper(buffer: &mut InstructionBuffer, disp: u64) {
         if disp == 0 { buffer.mod_rm_mod = Some(0); }
-        else if disp <= 128 as u64 {
+        else if disp < 128 as u64 {
             buffer.mod_rm_mod = Some(1);
             buffer.displacement = Some(ImmediateValue::Literal8(disp as u8));
         }
@@ -515,7 +515,7 @@ fn encode_indirect_32(buffer: &mut InstructionBuffer, base: Option<Reg>, index: 
 fn encode_indirect_64(buffer: &mut InstructionBuffer, base: Option<Reg>, index: Option<Reg>, scale: Option<RegScale>, displacement: u64) -> Result<(), InstructionEncodingError> {
     fn disp_helper(buffer: &mut InstructionBuffer, disp: u64) {
         if disp == 0 { buffer.mod_rm_mod = Some(0); }
-        else if disp <= 128 as u64 {
+        else if disp < 128 as u64 {
             buffer.mod_rm_mod = Some(1);
             buffer.displacement = Some(ImmediateValue::Literal8(disp as u8));
         }
