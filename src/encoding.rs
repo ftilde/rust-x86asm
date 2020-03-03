@@ -602,7 +602,7 @@ fn encode_indirect_64(buffer: &mut InstructionBuffer, base: Option<Reg>, index: 
                 _ => return Err(InstructionEncodingError::InvalidAddressing)
             }
         },
-        Some(Reg::RIP) if (real_scale == RegScale::One) => {
+        Some(Reg::RIP) if (real_scale == RegScale::One && index.is_none()) => {
             buffer.mod_rm_mod = Some(0);
             buffer.mod_rm_rm = Some(5); // RIP
             buffer.displacement = Some(ImmediateValue::Literal32(displacement as u32));
