@@ -1,7 +1,9 @@
 extern crate arrayvec;
 extern crate byteorder;
-#[macro_use] extern crate lazy_static;
-#[macro_use] extern crate matches;
+#[macro_use]
+extern crate lazy_static;
+#[macro_use]
+extern crate matches;
 
 mod decoding;
 mod encoding;
@@ -11,13 +13,17 @@ mod instruction_def;
 mod instruction_defs;
 mod mnemonic;
 mod operand;
-#[cfg(test)] mod test;
+#[cfg(test)]
+mod test;
 
 pub use self::decoding::{InstructionDecodingError, InstructionReader};
 pub use self::encoding::{InstructionEncodingError, InstructionWriter};
-pub use self::instruction::{ Instruction, Reg, RegScale, SegmentReg, MergeMode, MaskReg, BroadcastMode, RoundingMode, RegType };
-pub use self::operand::{Operand, OperandSize};
+pub use self::instruction::{
+    BroadcastMode, Instruction, MaskReg, MergeMode, Reg, RegScale, RegType, RoundingMode,
+    SegmentReg,
+};
 pub use self::mnemonic::Mnemonic;
+pub use self::operand::{Operand, OperandSize};
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum Mode {

@@ -3,12 +3,12 @@ mod addressing32;
 mod addressing64;
 mod decode;
 mod encode;
-mod size_inference;
 mod instruction_tests;
+mod size_inference;
 
+use instruction::Instruction;
 use std::io::Cursor;
-use ::*;
-use ::instruction::{Instruction};
+use *;
 
 fn decode_helper(bytes: &Vec<u8>, mode: Mode, expected: &Instruction) {
     println!("decode_helper ({:?}): {:?}\n", mode, expected);
@@ -19,7 +19,9 @@ fn decode_helper(bytes: &Vec<u8>, mode: Mode, expected: &Instruction) {
 
 fn encode16_helper(instr: &Instruction, expected: &Vec<u8>) {
     let mut buffer = Cursor::new(Vec::new());
-    instr.encode(&mut buffer, Mode::Real).expect("Encoding failed");
+    instr
+        .encode(&mut buffer, Mode::Real)
+        .expect("Encoding failed");
     assert_eq!(buffer.get_ref(), expected);
 }
 
@@ -37,7 +39,9 @@ fn encode16_helper2(mnemonic: Mnemonic, operand1: Operand, operand2: Operand, ex
 
 fn encode32_helper(instr: &Instruction, expected: &Vec<u8>) {
     let mut buffer = Cursor::new(Vec::new());
-    instr.encode(&mut buffer, Mode::Protected).expect("Encoding failed");
+    instr
+        .encode(&mut buffer, Mode::Protected)
+        .expect("Encoding failed");
     assert_eq!(buffer.get_ref(), expected);
 }
 
@@ -78,7 +82,13 @@ fn encode32_helper2(mnemonic: Mnemonic, operand1: Operand, operand2: Operand, ex
     encode32_helper(&instr, expected);
 }
 
-fn encode32_helper3(mnemonic: Mnemonic, operand1: Operand, operand2: Operand, operand3: Operand, expected: &Vec<u8>) {
+fn encode32_helper3(
+    mnemonic: Mnemonic,
+    operand1: Operand,
+    operand2: Operand,
+    operand3: Operand,
+    expected: &Vec<u8>,
+) {
     let instr = Instruction {
         mnemonic: mnemonic,
         operand1: Some(operand1),
@@ -90,7 +100,13 @@ fn encode32_helper3(mnemonic: Mnemonic, operand1: Operand, operand2: Operand, op
     encode32_helper(&instr, expected);
 }
 
-fn encode32_assert_ambiguous(mnemonic: Mnemonic, operand1: Option<Operand>, operand2: Option<Operand>, operand3: Option<Operand>, operand4: Option<Operand>) {
+fn encode32_assert_ambiguous(
+    mnemonic: Mnemonic,
+    operand1: Option<Operand>,
+    operand2: Option<Operand>,
+    operand3: Option<Operand>,
+    operand4: Option<Operand>,
+) {
     let instr = Instruction {
         mnemonic: mnemonic,
         operand1: operand1,
@@ -100,12 +116,17 @@ fn encode32_assert_ambiguous(mnemonic: Mnemonic, operand1: Option<Operand>, oper
         ..Default::default()
     };
     let mut buffer = Cursor::new(Vec::new());
-    assert_eq!(instr.encode(&mut buffer, Mode::Protected).err(), Some(InstructionEncodingError::AmbiguousSize));
+    assert_eq!(
+        instr.encode(&mut buffer, Mode::Protected).err(),
+        Some(InstructionEncodingError::AmbiguousSize)
+    );
 }
 
 fn encode64_helper(instr: &Instruction, expected: &Vec<u8>) {
     let mut buffer = Cursor::new(Vec::new());
-    instr.encode(&mut buffer, Mode::Long).expect("Encoding failed");
+    instr
+        .encode(&mut buffer, Mode::Long)
+        .expect("Encoding failed");
     assert_eq!(buffer.get_ref(), expected);
 }
 
@@ -123,7 +144,9 @@ fn encode64_helper2(mnemonic: Mnemonic, operand1: Operand, operand2: Operand, ex
 
 fn run_test(instr: &Instruction, expected: &[u8], addr_size: OperandSize) {
     let mut buffer = Cursor::new(Vec::new());
-    instr.encode(&mut buffer, Mode::from_size(addr_size).unwrap()).expect("Encoding failed");
+    instr
+        .encode(&mut buffer, Mode::from_size(addr_size).unwrap())
+        .expect("Encoding failed");
     if &buffer.get_ref()[..] != expected {
         println!("Test failed.");
         print!("Output:   [");
@@ -132,7 +155,10 @@ fn run_test(instr: &Instruction, expected: &[u8], addr_size: OperandSize) {
         print!("Expected: [");
         output_hex_array(expected);
         println!("]");
-        panic!("Failure. Mode: {:?}.\nInstruction: {:?}.\n", addr_size, instr); 
+        panic!(
+            "Failure. Mode: {:?}.\nInstruction: {:?}.\n",
+            addr_size, instr
+        );
     }
 }
 
@@ -140,7 +166,7 @@ fn output_hex_array(data: &[u8]) {
     for i in 0..data.len() {
         print!("{:02X}", data[i]);
         if i != data.len() - 1 {
-           print!(", "); 
+            print!(", ");
         }
     }
 }

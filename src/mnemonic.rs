@@ -2623,7 +2623,7 @@ impl Mnemonic {
             "XSAVES64" => Ok(Mnemonic::XSAVES64),
             "XSETBV" => Ok(Mnemonic::XSETBV),
             "XTEST" => Ok(Mnemonic::XTEST),
-            _ => Err(())
+            _ => Err(()),
         }
     }
 }
