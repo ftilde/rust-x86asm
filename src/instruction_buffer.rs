@@ -214,16 +214,19 @@ impl InstructionBuffer {
     where
         W: Write,
     {
-        let rex_byte = 0x40
-            | if self.operand_size_64 { 1 << 3 } else { 0 }
-            | self.mod_rm_reg.map(|reg| (reg & 0x8) >> 1).unwrap_or(0)
-            | self.sib_index.map(|idx| (idx & 0x8) >> 2).unwrap_or(0)
-            | self
-                .mod_rm_rm
-                .or(self.opcode_add)
-                .map(|rm| (rm & 0x8) >> 3)
-                .or(self.sib_base.map(|b| b & 0x8))
-                .unwrap_or(0);
+        let prefix = 0x40;
+        let w = if self.operand_size_64 { 0b1000 } else { 0 };
+        let r = self.mod_rm_reg.map(|reg| (reg & 0x8) >> 1).unwrap_or(0);
+        let x = self.sib_index.map(|idx| (idx & 0x8) >> 2).unwrap_or(0);
+        let b_modrm = self
+            .mod_rm_rm
+            .or(self.opcode_add)
+            .map(|rm| (rm & 0x8) >> 3)
+            .unwrap_or(0);
+        let b_sib_base = self.sib_base.map(|b| (b & 0x8) >> 3).unwrap_or(0);
+        let b = b_modrm | b_sib_base;
+
+        let rex_byte = prefix | w | r | x | b;
         writer.write(&[rex_byte])
     }
 
