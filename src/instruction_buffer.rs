@@ -236,7 +236,14 @@ impl InstructionBuffer {
     {
         let vex_r = self.mod_rm_reg.map(|r| (!r & 0x8) >> 3).unwrap_or(0);
         let vex_x = self.sib_index.map(|s| (!s & 0x8) >> 3);
-        let vex_b = self.mod_rm_rm.or(self.sib_base).map(|r| (!r & 0x8) >> 3);
+        let vex_b_modrm = self.mod_rm_rm.map(|r| (!r & 0x8) >> 3);
+        let vex_b_sib_base = self.sib_base.map(|r| (!r & 0x8) >> 3);
+        let vex_b = match (vex_b_modrm, vex_b_sib_base) {
+            (Some(r), Some(b)) => Some(r & b),
+            (Some(r), None) => Some(r),
+            (None, Some(b)) => Some(b),
+            (None, None) => None,
+        };
         let vex_we = if self.vex_e.unwrap_or(self.operand_size_64) {
             1
         } else {
